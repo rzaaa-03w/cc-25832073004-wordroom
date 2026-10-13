@@ -1,0 +1,14 @@
+ Static hostname: cc-m03-25832073004
+       Icon name: computer-vm
+         Chassis: vm 🖴
+      Machine ID: ec25ed6918c99c45277883e3e24a93a0
+         Boot ID: 3c0485aa175745928daf28ade376d8a9
+  Virtualization: amazon
+Operating System: Ubuntu 24.04.5 LTS
+          Kernel: Linux 7.0.0-1014-aws
+    Architecture: x86-64
+ Hardware Vendor: Amazon EC2
+  Hardware Model: t3.micro
+Firmware Version: 1.0
+   Firmware Date: Mon 2017-10-16
+    Firmware Age: 8y 11month 3w 6d

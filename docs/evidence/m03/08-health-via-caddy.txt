@@ -1,0 +1,8 @@
+HTTP/1.1 200 OK
+Content-Length: 91
+Content-Type: application/json
+Date: Tue, 13 Oct 2026 09:03:20 GMT
+Server: gunicorn
+Via: 1.1 Caddy
+
+{"environment":"development","status":"ok","timestamp":"2026-10-13T09:03:20.172281+00:00"}

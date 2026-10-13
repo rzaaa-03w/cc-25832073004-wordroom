@@ -1,0 +1,1 @@
+{"code":"PTI 2802","course":"Cloud Computing","deployment":"AWS EC2 Ubuntu 24.04","meeting":3,"milestone":"M03","project":"WordRoom"}
