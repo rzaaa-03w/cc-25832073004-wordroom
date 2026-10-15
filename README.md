@@ -1,42 +1,65 @@
 # WordRoom
 
-Kuis cepat berlomba berbasis browser. Host membuat ruangan, pemain masuk lewat kode, lalu pertanyaan muncul bersamaan untuk semua pemain. Jawaban benar mendapat poin, dan jawaban yang lebih cepat mendapat poin lebih besar.
+Cloud Computing — PTI 2802
+Pertemuan 3 — Project Inception
 
-Proyek semester mata kuliah **Cloud Computing (PTI 2802)**, Institut Pendidikan Indonesia.
+## Author
+Nama: Reja
+NIM: 25832073004
+Kelas: PTI 2A
+
+## Problem
+Guru, dosen, dan komunitas belajar membutuhkan aktivitas interaktif yang bisa diikuti banyak orang sekaligus tanpa instal aplikasi. Sistem menyediakan kuis cepat berlomba berbasis browser, di mana pemain masuk ke ruangan lewat kode dan menjawab pertanyaan secara bersamaan, sehingga partisipasi meningkat dan hasilnya langsung terlihat.
+
+## Target Users
+- **Host** (guru, dosen, ketua komunitas): membuat ruangan dan membagikan kode.
+- **Pemain** (siswa, mahasiswa, anggota komunitas): masuk lewat kode dari HP atau laptop.
+
+## Features M03
+- Baseline aplikasi Flask
+- Health endpoint
+- Deployment pada server cloud
+
+Fitur kuis (ruangan, pertanyaan, skor) belum diimplementasikan dan dikembangkan pada pertemuan berikutnya.
 
 ## Status
 
 | Pertemuan | Capaian | Status |
 |---|---|---|
 | M03 | Server pertama, aplikasi dasar, deployment HTTP | Selesai (tag `m03`) |
-| M04 | Domain dan HTTPS | Direncanakan |
+| M04 | Domain dan HTTPS | Dalam pengerjaan |
 | M05 | Database untuk soal, ruangan, skor | Direncanakan |
 | M06 | Container | Direncanakan |
 | M09 | CI/CD | Direncanakan |
 
-Fitur kuis belum diimplementasikan. Versi M03 hanya berisi baseline aplikasi dan infrastruktur.
+## Architecture
 
-## Endpoint (M03)
+```mermaid
+flowchart LR
+    U[User] --> F[Security Group + UFW]
+    F --> C[Caddy :80]
+    C --> G[Gunicorn 127.0.0.1:8000]
+    G --> A[Flask]
+```
+
+Detail ada di [`docs/architecture.md`](docs/architecture.md), [`docs/requirements.md`](docs/requirements.md), dan [`docs/adr/`](docs/adr/).
+
+## Infrastructure
+- AWS EC2 (ap-southeast-1), Ubuntu Server 24.04 LTS
+- Sekitar 1 GB RAM, disk 20 GB
+- Caddy (reverse proxy), Gunicorn (application server), systemd (service manager), UFW (firewall)
+
+## Public Endpoint
+`http://<PUBLIC_IP>/`
+
+## Health Check
+`GET /health` mengembalikan HTTP 200 dan JSON status.
 
 | Path | Fungsi |
 |---|---|
 | `/` | Halaman utama |
-| `/health` | Health check, mengembalikan HTTP 200 dan JSON status |
+| `/health` | Health check |
 | `/api/info` | Metadata aplikasi |
-
-## Arsitektur
-
-```
-Internet -> Security Group + UFW -> Caddy (:80) -> Gunicorn (127.0.0.1:8000) -> Flask
-```
-
-- Server: AWS EC2, Ubuntu Server 24.04 LTS, 1 GB RAM, region ap-southeast-1
-- Reverse proxy: Caddy
-- Application server: Gunicorn (1 worker, 2 thread)
-- Service manager: systemd (`cc-m03.service`)
-- Backend hanya listen pada `127.0.0.1`, tidak terekspos langsung
-
-Detail ada di [`docs/architecture.md`](docs/architecture.md), [`docs/requirements.md`](docs/requirements.md), dan [`docs/adr/`](docs/adr/).
 
 ## Menjalankan secara lokal
 
@@ -49,34 +72,25 @@ flask --app app run
 
 Buka `http://127.0.0.1:5000/`.
 
-## Deployment (ringkas)
+## Deployment
+Lihat [`docs/deployment.md`](docs/deployment.md).
 
-1. Buat server Ubuntu 24.04 dan buka hanya port 22 (dibatasi ke satu IP) dan 80.
-2. Buat user non-root, SSH hanya dengan key, nonaktifkan login root dan password.
-3. Aktifkan firewall UFW (OpenSSH dan 80/tcp) dan tambahkan swap 1 GB.
-4. Instal Python, Git, dan Caddy.
-5. Clone repository ke `/srv/cc-m03` memakai deploy key, buat virtual environment, dan instal dependensi.
-6. Jalankan Gunicorn sebagai service systemd, lalu atur Caddy sebagai reverse proxy ke `127.0.0.1:8000`.
-
-## Keamanan
-
-- Login SSH hanya dengan key; `PermitRootLogin no` dan `PasswordAuthentication no`.
-- Firewall berlapis: Security Group (jaringan) dan UFW (host).
-- Secret tidak disimpan di repository (`.env` diabaikan lewat `.gitignore`).
-- Deploy key GitHub hanya untuk repository ini dan dicabut di akhir sesi.
+## Security
+- Login SSH hanya dengan key; `PermitRootLogin no` dan `PasswordAuthentication no`
+- Firewall berlapis: Security Group dan UFW
+- Backend hanya listen pada `127.0.0.1`
+- Secret tidak disimpan di repository (`.env` diabaikan lewat `.gitignore`)
+- Deploy key GitHub dicabut di akhir sesi praktikum
 
 ## Evidence
+Bukti konfigurasi dan pengujian M03 ada di [`docs/evidence/m03/`](docs/evidence/m03/).
 
-Bukti konfigurasi dan pengujian M03 ada di [`docs/evidence/m03/`](docs/evidence/m03/): konfigurasi OS, memori, disk, firewall, SSH efektif, status service, port yang listen, dan hasil health check.
-
-## Keterbatasan saat ini
-
+## Current Limitations
 - Hanya HTTP, belum HTTPS
 - Satu server tanpa redundansi
 - Belum ada database
+- Belum ada container
 - Deployment masih manual
-- IP publik berubah saat server dihentikan dan dinyalakan lagi
 
 ## Roadmap
-
-HTTPS dan domain (M04), database untuk bank soal dan skor (M05), container (M06), CI/CD (M09), kemudian ruangan real-time dan uji beban.
+DNS dan HTTPS (M04), data persisten (M05), container (M06), infrastructure as code (M07), CI/CD (M09), kemudian ruangan real-time dan uji beban.
